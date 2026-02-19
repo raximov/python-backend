@@ -1,0 +1,503 @@
+{
+	"info": {
+		"_postman_id": "bc6caa69-510b-4fd5-9a61-7a4267a7a7a7",
+		"name": "Public HTTP APIs Project",
+		"description": "Loyiha: Public API larga murojaat qilish. 3 qism: News API, HH.ru, Telegram Bot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31186159"
+	},
+	"item": [
+		{
+			"name": "Part 1 - News API",
+			"item": [
+				{
+					"name": "1. Linux haqida barcha yangiliklar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{NEWS_API_KEY}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://newsapi.org/v2/everything?q=Linux",
+							"protocol": "https",
+							"host": [
+								"newsapi",
+								"org"
+							],
+							"path": [
+								"v2",
+								"everything"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Linux"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Development yangiliklari (RU, 15 kun)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{NEWS_API_KEY}}"
+							}
+						],
+						"url": {
+							"raw": "https://newsapi.org/v2/everything?q=development&language=ru&from=2025-02-05&to=2025-02-19",
+							"protocol": "https",
+							"host": [
+								"newsapi",
+								"org"
+							],
+							"path": [
+								"v2",
+								"everything"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "development"
+								},
+								{
+									"key": "language",
+									"value": "ru"
+								},
+								{
+									"key": "from",
+									"value": "2025-02-05"
+								},
+								{
+									"key": "to",
+									"value": "2025-02-19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Linux yangiliklari (RU, sahifa 3, 10 ta)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{NEWS_API_KEY}}"
+							}
+						],
+						"url": {
+							"raw": "https://newsapi.org/v2/everything?q=Linux&language=ru&page=3&pageSize=10",
+							"protocol": "https",
+							"host": [
+								"newsapi",
+								"org"
+							],
+							"path": [
+								"v2",
+								"everything"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Linux"
+								},
+								{
+									"key": "language",
+									"value": "ru"
+								},
+								{
+									"key": "page",
+									"value": "3"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Science sarlavhalari (EN)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{NEWS_API_KEY}}"
+							}
+						],
+						"url": {
+							"raw": "https://newsapi.org/v2/top-headlines?q=science&language=ru",
+							"protocol": "https",
+							"host": [
+								"newsapi",
+								"org"
+							],
+							"path": [
+								"v2",
+								"top-headlines"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "science"
+								},
+								{
+									"key": "language",
+									"value": "ru"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Part 2 - HH.uz Developer Tools",
+			"item": [
+				{
+					"name": "HH.uz - Vakansiya kontakt ma'lumotlari",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "cookie",
+								"value": "{{HH_COOKIE}}",
+								"description": "Chrome DevTools -> Network -> so'rov -> Request Headers -> cookie ni to'liq ko'chiring"
+							},
+							{
+								"key": "x-xsrftoken",
+								"value": "{{HH_XSRF_TOKEN}}",
+								"description": "Chrome DevTools dagi x-xsrftoken qiymati"
+							},
+							{
+								"key": "x-requested-with",
+								"value": "XMLHttpRequest"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "referer",
+								"value": "https://tashkent.hh.uz/vacancy/130540433"
+							},
+							{
+								"key": "x-hhtmfrom",
+								"value": "main"
+							},
+							{
+								"key": "x-hhtmsource",
+								"value": "vacancy"
+							}
+						],
+						"url": {
+							"raw": "https://tashkent.hh.uz/shards/vacancy/contact_info?employer_id=5810442&id=130556793",
+							"protocol": "https",
+							"host": [
+								"tashkent",
+								"hh",
+								"uz"
+							],
+							"path": [
+								"shards",
+								"vacancy",
+								"contact_info"
+							],
+							"query": [
+								{
+									"key": "employer_id",
+									"value": "5810442",
+									"description": "Employer ID - Chrome DevTools dan olingan"
+								},
+								{
+									"key": "id",
+									"value": "130556793",
+									"description": "Vacancy ID - Chrome DevTools dan olingan"
+								}
+							]
+						},
+						"description": "HH.uz vakansiya kontakt ma'lumotlari.\n\n⚠️ 401 MUAMMOSINI HAL QILISH:\nBu API session cookie talab qiladi. Quyidagilarni Chrome DevTools dan ko'chiring:\n\n1. Chrome -> hh.uz -> F12 -> Network -> Fetch/XHR\n2. 'Kontaktlarni ko'rsatish' tugmasini bosing\n3. contact_info so'rovini toping\n4. Request Headers bo'limidan:\n   - 'cookie' qiymatini to'liq nusxa olib HH_COOKIE variabliga yozing\n   - 'x-xsrftoken' qiymatini HH_XSRF_TOKEN variabliga yozing\n5. So'rovni qayta yuboring - 200 OK keladi!"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Part 3 - Telegram Bot",
+			"item": [
+				{
+					"name": "1. getMe - Bot ma'lumotlari",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/getMe",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"getMe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. getUpdates - chat_id topish",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/getUpdates",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"getUpdates"
+							]
+						},
+						"description": "Botga /start yuborgandan so'ng yuboring. message.chat.id ni TELEGRAM_CHAT_ID ga saqlang."
+					},
+					"response": []
+				},
+				{
+					"name": "3. sendMessage - Xabar yuborish",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chat_id\": \"{{TELEGRAM_CHAT_ID}}\",\n  \"text\": \"Salom! Bu Postman orqali yuborilgan xabar. 🚀\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/sendMessage",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. sendPhoto - Rasm yuborish",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "chat_id",
+									"value": "{{TELEGRAM_CHAT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "photo",
+									"description": "JPG yoki PNG fayl tanlang",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "caption",
+									"value": "Postman orqali yuborilgan rasm!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/sendPhoto",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"sendPhoto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. sendPhoto + PDF (xato natija)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "chat_id",
+									"value": "{{TELEGRAM_CHAT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "photo",
+									"description": "PDF odt fayl tanlang - xato qaytaradi!",
+									"type": "file",
+									"src": "/home/user01/Documents/part1.docx_0.odt"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/sendPhoto",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"sendPhoto"
+							]
+						},
+						"description": "PDF ni sendPhoto ga yuborish -> Bad Request: photo_invalid xatosi keladi"
+					},
+					"response": []
+				},
+				{
+					"name": "6. sendDocument - DOCX yuborish",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "chat_id",
+									"value": "{{TELEGRAM_CHAT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "document",
+									"description": "DOCX yoki odt fayl tanlang",
+									"type": "file",
+									"src": "/home/user01/Documents/part1.docx_0.odt"
+								},
+								{
+									"key": "caption",
+									"value": "Bu DOCX hujjat",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/sendDocument",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"sendDocument"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. getUserProfilePhotos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.telegram.org/bot{{TELEGRAM_BOT_TOKEN}}/getUserProfilePhotos?user_id={{TELEGRAM_CHAT_ID}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"telegram",
+								"org"
+							],
+							"path": [
+								"bot{{TELEGRAM_BOT_TOKEN}}",
+								"getUserProfilePhotos"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{TELEGRAM_CHAT_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "NEWS_API_KEY",
+			"value": "YOUR_NEWSAPI_KEY_HERE",
+			"description": "newsapi.org dan olingan API key"
+		},
+		{
+			"key": "TELEGRAM_BOT_TOKEN",
+			"value": "YOUR_BOT_TOKEN_HERE",
+			"description": "BotFather dan olingan token"
+		},
+		{
+			"key": "TELEGRAM_CHAT_ID",
+			"value": "YOUR_CHAT_ID_HERE",
+			"description": "getUpdates dan olingan chat_id"
+		},
+		{
+			"key": "HH_XSRF_TOKEN",
+			"value": "YOUR_XSRF_TOKEN_HERE",
+			"description": "Chrome DevTools dan olingan _xsrf token — eskirsa yangilanishi kerak"
+		},
+		{
+			"key": "HH_COOKIE",
+			"value": "YOUR_FULL_COOKIE_STRING_HERE",
+			"description": "Chrome DevTools -> Request Headers -> cookie qiymatini bu yerga to'liq ko'chiring"
+		}
+	]
+}
