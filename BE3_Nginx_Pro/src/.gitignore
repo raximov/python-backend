@@ -1,0 +1,9 @@
+!conf.d/
+!conf.d/*.conf
+
+cache/
+logs/
+runtime/
+tmp/
+certs/*.crt
+certs/*.key

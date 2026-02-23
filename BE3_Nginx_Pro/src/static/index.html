@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store API Gateway</title>
+  <style>
+    :root {
+      --bg: #f0f6ff;
+      --card: #ffffff;
+      --text: #1f2937;
+      --accent: #1d4ed8;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top left, #dbeafe, var(--bg));
+      color: var(--text);
+    }
+
+    main {
+      width: min(90vw, 760px);
+      padding: 2rem;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(30, 64, 175, 0.15);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .links {
+      display: grid;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    img {
+      width: 180px;
+      margin-top: 1rem;
+      border-radius: 10px;
+    }
+
+    code {
+      background: #eff6ff;
+      padding: 0.15rem 0.3rem;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Nginx Store API Gateway</h1>
+    <p>This static distribution is served from <code>/</code> as required.</p>
+
+    <div class="links">
+      <a href="/api/v1/swagger/index.html">Swagger (/api/v1)</a>
+      <a href="/api/v2/swagger/index.html">Swagger (/api/v2 alias)</a>
+      <a href="/admin/">pgAdmin (/admin)</a>
+      <a href="/status">Nginx Status (/status)</a>
+    </div>
+
+    <img src="/image.png" alt="Store gateway" />
+  </main>
+</body>
+</html>
