@@ -1,0 +1,12 @@
+fastapi[all]
+bcrypt
+DateTime
+passlib
+cryptography 
+python-jose
+python-multipart
+SQLAlchemy 
+itsdangerous 
+psycopg2-binary
+grpcio
+grpcio-tools

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  auth_service:
+    build:
+      context: .
+      dockerfile: auth_service/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://auth_user:auth_password@db:5432/auth_db
+      - JWT_SECRET=super_secret_key_123
+    ports:
+      - "50051:50051"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python -m grpc_tools.protoc -I./protos --python_out=./auth_service --grpc_python_out=./auth_service ./protos/auth.proto && python auth_service/main.py"
+
+  store_api:
+    build:
+      context: .
+      dockerfile: store_api/Dockerfile
+    environment:
+      - AUTH_GRPC_HOST=auth_service
+      - AUTH_GRPC_PORT=50051
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth_service
+    command: >
+      sh -c "python -m grpc_tools.protoc -I./protos --python_out=./store_api --grpc_python_out=./store_api ./protos/auth.proto && uvicorn store_api.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  postgres_data:
