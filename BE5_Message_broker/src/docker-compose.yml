@@ -1,0 +1,226 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: shop_api_postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      READONLY_DB_PASSWORD: ${READONLY_DB_PASSWORD}
+
+    ports:
+      - "${DB_PORT}:5432"
+
+    volumes:
+      - shop_postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER} -d ${DB_NAME}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:9.16
+    container_name: shop_api_pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+
+    ports:
+      - "5050:80"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  rabbitmq:
+    image: rabbitmq:4.3.4-management-alpine
+    container_name: shop_api_rabbitmq
+    hostname: shop-rabbitmq
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+
+    ports:
+      - "127.0.0.1:${RABBITMQ_PORT}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT}:15672"
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "rabbitmq-diagnostics -q ping"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:8.4.5-alpine
+    container_name: shop_api_redis
+    restart: unless-stopped
+
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+
+    ports:
+      - "127.0.0.1:${REDIS_PORT}:6379"
+
+    volumes:
+      - redis_data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+
+    container_name: shop_api_auth
+    restart: unless-stopped
+    init: true
+
+    environment:
+      AUTH_DATABASE_URL: >-
+        postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@postgres:5432/${AUTH_DB_NAME}
+
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50051
+
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
+
+    ports:
+      - "127.0.0.1:${AUTH_GRPC_HOST_PORT}:50051"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import socket; s=socket.create_connection(('127.0.0.1', 50051), 2); s.close()"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+
+    container_name: shop_api_gateway
+    restart: unless-stopped
+    init: true
+
+    environment:
+      DATABASE_URL: >-
+        postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+
+      GRPC_HOST: auth-service
+      GRPC_PORT: 50051
+
+      RABBITMQ_URL: >-
+        amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
+      RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      RABBITMQ_ROUTING_KEY: ${RABBITMQ_ROUTING_KEY}
+
+      REDIS_URL: redis://redis:6379/0
+      IMAGE_CACHE_TTL_SECONDS: ${IMAGE_CACHE_TTL_SECONDS}
+
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT}:8000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=2)"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 15s
+
+  event-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+
+    container_name: shop_api_event_worker
+    restart: unless-stopped
+    init: true
+
+    environment:
+      DATABASE_URL: >-
+        postgresql+psycopg://shop_reader:${READONLY_DB_PASSWORD}@postgres:5432/${DB_NAME}
+
+      READONLY_DATABASE_URL: >-
+        postgresql+psycopg://shop_reader:${READONLY_DB_PASSWORD}@postgres:5432/${DB_NAME}
+
+      RABBITMQ_URL: >-
+        amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
+      RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      RABBITMQ_ROUTING_KEY: ${RABBITMQ_ROUTING_KEY}
+
+      EVENT_GENERATOR_INTERVAL_SECONDS: ${EVENT_GENERATOR_INTERVAL_SECONDS}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy
+
+volumes:
+  shop_postgres_data:
+  pgadmin_data:
+  rabbitmq_data:
+  redis_data:
